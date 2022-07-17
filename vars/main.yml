@@ -1,2 +1,5 @@
 ---
-# vars file for ansible-role-skeleton/
+http_port: 8096
+https_port: 8920
+service_discovery_port: 1900
+auto_discovery_port: 7359

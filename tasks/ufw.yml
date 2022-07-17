@@ -1,0 +1,33 @@
+---
+- name: Configure UFW for Jellyfin
+  tags: install
+  become: true
+  block:
+
+  - name: Allow HTTP
+    community.general.ufw:
+      rule: allow
+      proto: tcp
+      port: "{{ http_port }}"
+    notify: reload ufw
+
+  - name: Allow HTTPS
+    community.general.ufw:
+      rule: allow
+      proto: tcp
+      port: "{{ https_port }}"
+    notify: reload ufw
+
+  - name: Allow service auto-discovery
+    community.general.ufw:
+      rule: allow
+      proto: udp
+      port: "{{ service_discovery_port }}"
+    notify: reload ufw
+
+  - name: Allow auto-discovery
+    community.general.ufw:
+      rule: allow
+      proto: udp
+      port: "{{ auto_discovery_port }}"
+    notify: reload ufw

@@ -1,2 +1,6 @@
 ---
-# tasks file for ansible-role-skeleton/
+- include_tasks: ufw.yml
+  tags: install
+
+- include_tasks: docker.yml
+  tags: install

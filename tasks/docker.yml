@@ -1,0 +1,56 @@
+---
+- name: Install Jellyfin
+  become: true
+  tags: install
+  block:
+
+    - name: Add 'jellyfin' user
+      ansible.builtin.user:
+        name: jellyfin
+        group: media
+
+    - name: Create Jellyfin app directory
+      ansible.builtin.file:
+        path: "{{ jellyfin_config }}"
+        state: directory
+        mode: 0775
+        owner: jellyfin
+        group: media
+
+    - name: Create Jellyfin config directory
+      ansible.builtin.file:
+        path: "{{ jellyfin_config }}/config"
+        state: directory
+        mode: 0775
+        owner: jellyfin
+        group: media
+
+    - name: Create Jellyfin cache directory
+      ansible.builtin.file:
+        path: "{{ jellyfin_config }}/cache"
+        state: directory
+        mode: 0775
+        owner: jellyfin
+        group: media
+
+    - name: Instantiate passwd database
+      getent:
+        database: passwd
+
+    - name: Create Jellyfin container
+      community.docker.docker_container:
+        name: jellyfin
+        image: jellyfin/jellyfin
+        user: "{{ getent_passwd['jellyfin'].1 }}:{{ getent_passwd['jellyfin'].2 }}"
+        restart_policy: unless-stopped
+        volumes:
+          - "{{ jellyfin_config }}/config:/config"
+          - "{{ jellyfin_config }}/cache:/cache"
+          - "{{ media_dir }}:/media"
+        ports:
+          - "{{ http_port }}:{{ http_port }}"
+          - "{{ https_port }}:{{ https_port }}"
+          - "{{ service_discovery_port }}:{{ service_discovery_port }}"
+          - "{{ auto_discovery_port }}:{{ auto_discovery_port }}"
+        env:
+          JELLYFIN_PublishedServerUrl: "{{ inventory_hostname }}"
