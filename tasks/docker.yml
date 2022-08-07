@@ -9,17 +9,9 @@
         name: jellyfin
         group: media
 
-    - name: Create Jellyfin app directory
-      ansible.builtin.file:
-        path: "{{ jellyfin_config }}"
-        state: directory
-        mode: 0775
-        owner: jellyfin
-        group: media
-
     - name: Create Jellyfin config directory
       ansible.builtin.file:
-        path: "{{ jellyfin_config }}/config"
+        path: /home/jellyfin/config"
         state: directory
         mode: 0775
         owner: jellyfin
@@ -27,7 +19,7 @@
 
     - name: Create Jellyfin cache directory
       ansible.builtin.file:
-        path: "{{ jellyfin_config }}/cache"
+        path: /home/jellyfin/cache
         state: directory
         mode: 0775
         owner: jellyfin
