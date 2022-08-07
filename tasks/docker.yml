@@ -11,7 +11,7 @@
 
     - name: Create Jellyfin config directory
       ansible.builtin.file:
-        path: /home/jellyfin/config"
+        path: /home/jellyfin/config
         state: directory
         mode: 0775
         owner: jellyfin
@@ -36,9 +36,9 @@
         user: "{{ getent_passwd['jellyfin'].1 }}:{{ getent_passwd['jellyfin'].2 }}"
         restart_policy: unless-stopped
         volumes:
-          - "{{ jellyfin_config }}/config:/config"
-          - "{{ jellyfin_config }}/cache:/cache"
-          - "{{ media_dir }}:/media"
+          - /home/jellyfin/config:/config
+          - /home/jellyfin/cache:/cache
+          - /home/media/data/media:/media
         ports:
           - "{{ http_port }}:{{ http_port }}"
           - "{{ https_port }}:{{ https_port }}"
