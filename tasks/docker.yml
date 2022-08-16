@@ -32,7 +32,8 @@
     - name: Create Jellyfin container
       community.docker.docker_container:
         name: jellyfin
-        image: jellyfin/jellyfin
+        image: jellyfin/jellyfin:latest
+        pull: true
         user: "{{ getent_passwd['jellyfin'].1 }}:{{ getent_passwd['jellyfin'].2 }}"
         restart_policy: unless-stopped
         volumes:
