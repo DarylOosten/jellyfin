@@ -8,6 +8,7 @@
       ansible.builtin.user:
         name: jellyfin
         group: media
+        uid: "{{ uid }}"
 
     - name: Create Jellyfin config directory
       ansible.builtin.file:
