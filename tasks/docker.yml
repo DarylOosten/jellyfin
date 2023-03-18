@@ -32,7 +32,7 @@
         driver_options:
           type: nfs
           o: "addr=nas.home,rw,nfsvers=4,async"
-          device: :/volume1/media/data
+          device: :/volume1/media/data/media
         volume_name: jellyfin_media
 
     - name: Instantiate passwd database
