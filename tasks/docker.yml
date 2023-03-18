@@ -40,7 +40,7 @@
         volumes:
           - /home/jellyfin/config:/config
           - /home/jellyfin/cache:/cache
-          - /home/media/data/media:/media
+          - media_data:/media
         ports:
           - "{{ http_port }}:{{ http_port }}"
           - "{{ https_port }}:{{ https_port }}"
