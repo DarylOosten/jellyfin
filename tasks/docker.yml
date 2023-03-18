@@ -31,7 +31,7 @@
         driver: "local"
         driver_options:
           type: nfs
-          o: "addr=nas.home,rw,nfsvers=4,async"
+          o: "addr=nas.home,nolock,soft,rw"
           device: :/volume1/media/data/media
         volume_name: jellyfin_media
 
