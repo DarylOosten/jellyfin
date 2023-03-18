@@ -26,6 +26,15 @@
         owner: jellyfin
         group: media
 
+    - name: Create jellyfin_media volume
+      docker_volume:
+        driver: "local"
+        driver_options:
+          type: nfs
+          o: "addr=nas.home,rw,nfsvers=4,async"
+          device: :/volume1/media/data/media
+        volume_name: jellyfin_media
+
     - name: Instantiate passwd database
       getent:
         database: passwd
@@ -40,7 +49,7 @@
         volumes:
           - /home/jellyfin/config:/config
           - /home/jellyfin/cache:/cache
-          - media_data:/media
+          - jellyfin_media:/media
         ports:
           - "{{ http_port }}:{{ http_port }}"
           - "{{ https_port }}:{{ https_port }}"
