@@ -4,10 +4,22 @@
   tags: install
   block:
 
+    - name: Add 'jellyfin' group
+      ansible.builtin.group:
+        name: jellyfin
+        state: present
+        gid: "{{ gid }}"
+
+    - name: Add Ansible user to jellyfin
+      ansible.builtin.user:
+        name: "{{ user }}"
+        groups: jellyfin
+        append: true
+
     - name: Add 'jellyfin' user
       ansible.builtin.user:
         name: jellyfin
-        group: media
+        group: jellyfin
         uid: "{{ uid }}"
 
     - name: Create Jellyfin config directory
@@ -16,7 +28,7 @@
         state: directory
         mode: 0775
         owner: jellyfin
-        group: media
+        group: jellyfin
 
     - name: Create Jellyfin cache directory
       ansible.builtin.file:
@@ -24,7 +36,7 @@
         state: directory
         mode: 0775
         owner: jellyfin
-        group: media
+        group: jellyfin
 
     - name: Create jellyfin_media volume
       docker_volume:
