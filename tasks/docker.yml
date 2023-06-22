@@ -69,13 +69,3 @@
           - "{{ auto_discovery_port }}:{{ auto_discovery_port }}"
         env:
           JELLYFIN_PublishedServerUrl: "{{ inventory_hostname }}"
-
-    - name: Copy nginx config file
-      template:
-        src: nginx.conf.j2
-        dest: /etc/nginx/conf.d/jellyfin.conf
-        owner: root
-        group: root
-        mode: u=rw,g=r,o=r
-      notify:
-        - restart nginx
