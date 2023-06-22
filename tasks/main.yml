@@ -1,6 +1,9 @@
 ---
-- include_tasks: ufw.yml
+- include_tasks: user.yml
   tags: install
 
 - include_tasks: docker.yml
+  tags: install
+
+- include_tasks: ufw.yml
   tags: install

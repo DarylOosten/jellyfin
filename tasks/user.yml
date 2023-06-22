@@ -1,0 +1,23 @@
+---
+- name: Add Jellyfin users
+  become: true
+  tags: install
+  block:
+
+    - name: Add 'jellyfin' group
+      ansible.builtin.group:
+        name: jellyfin
+        state: present
+        gid: "{{ gid }}"
+
+    - name: Add Ansible user to jellyfin
+      ansible.builtin.user:
+        name: "{{ user }}"
+        groups: jellyfin
+        append: true
+
+    - name: Add 'jellyfin' user
+      ansible.builtin.user:
+        name: jellyfin
+        group: jellyfin
+        uid: "{{ uid }}"
