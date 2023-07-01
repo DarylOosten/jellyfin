@@ -8,14 +8,14 @@
     community.general.ufw:
       rule: allow
       proto: tcp
-      port: "{{ http_port }}"
+      port: http
     notify: reload ufw
 
   - name: Allow HTTPS
     community.general.ufw:
       rule: allow
       proto: tcp
-      port: "{{ https_port }}"
+      port: https
     notify: reload ufw
 
   - name: Allow service auto-discovery
