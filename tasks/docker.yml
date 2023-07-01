@@ -45,8 +45,8 @@
           - /home/jellyfin/cache:/cache
           - jellyfin_media:/media
         ports:
-          - "{{ http_port }}:{{ http_port }}"
-          - "{{ https_port }}:{{ https_port }}"
+          - "80:{{ http_port }}"
+          - "443:{{ https_port }}"
           - "{{ service_discovery_port }}:{{ service_discovery_port }}"
           - "{{ auto_discovery_port }}:{{ auto_discovery_port }}"
         env:
