@@ -36,18 +36,20 @@
     - name: Create Jellyfin container
       community.docker.docker_container:
         name: jellyfin
-        image: jellyfin/jellyfin:latest
+        image: lscr.io/linuxserver/jellyfin:latest
         pull: true
         user: "{{ getent_passwd['jellyfin'].1 }}:{{ getent_passwd['jellyfin'].2 }}"
         restart_policy: unless-stopped
         volumes:
           - /home/jellyfin/config:/config
-          - /home/jellyfin/cache:/cache
-          - jellyfin_media:/media
+          - jellyfin_media:/data
         ports:
           - "80:{{ http_port }}"
           - "443:{{ https_port }}"
-          - "{{ service_discovery_port }}:{{ service_discovery_port }}"
-          - "{{ auto_discovery_port }}:{{ auto_discovery_port }}"
+          - "{{ service_discovery_port }}:{{ service_discovery_port }}/udp"
+          - "{{ auto_discovery_port }}:{{ auto_discovery_port }}/udp"
         env:
+          TZ: Asia/Bangkok
+          PUID: "{{ getent_passwd['bazarr'].1 }}"
+          PGID: "{{ getent_passwd['bazarr'].2 }}"
           JELLYFIN_PublishedServerUrl: "{{ inventory_hostname }}"
