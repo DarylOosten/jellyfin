@@ -33,10 +33,6 @@
       getent:
         database: passwd
 
-    - name: Debug user
-      debug:
-        var: getent_passwd['jellyfin']
-
     - name: Create Jellyfin container
       community.docker.docker_container:
         name: jellyfin
