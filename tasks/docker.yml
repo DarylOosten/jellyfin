@@ -38,7 +38,6 @@
         name: jellyfin
         image: lscr.io/linuxserver/jellyfin:latest
         pull: true
-        user: "{{ getent_passwd['jellyfin'].1 }}:{{ getent_passwd['jellyfin'].2 }}"
         restart_policy: unless-stopped
         volumes:
           - /home/jellyfin/config:/config
@@ -50,6 +49,6 @@
           - "{{ auto_discovery_port }}:{{ auto_discovery_port }}/udp"
         env:
           TZ: Asia/Bangkok
-          PUID: "{{ getent_passwd['bazarr'].1 }}"
-          PGID: "{{ getent_passwd['bazarr'].2 }}"
+          PUID: "{{ getent_passwd['jellyfin'].1 }}"
+          PGID: "{{ getent_passwd['jellyfin'].2 }}"
           JELLYFIN_PublishedServerUrl: "{{ inventory_hostname }}"
