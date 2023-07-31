@@ -1,9 +1,71 @@
 ---
-- include_tasks: user.yml
+- name: Install Jellyfin
+  become: true
   tags: install
+  block:
 
-- include_tasks: docker.yml
-  tags: install
+    - name: Create jellyfin_config volume
+      docker_volume:
+        driver: "local"
+        driver_options:
+          type: nfs
+          o: "addr={{ nas }},nolock,soft,rw"
+          device: "{{ jellyfin_config_nfs }}"
+        volume_name: jellyfin_config
 
-- include_tasks: ufw.yml
-  tags: install
+    - name: Create jellyfin_media volume
+      docker_volume:
+        driver: "local"
+        driver_options:
+          type: nfs
+          o: "addr={{ nas }},nolock,soft,rw"
+          device: "{{ jellyfin_media_nfs }}"
+        volume_name: jellyfin_media
+
+    - name: Create Jellyfin container
+      community.docker.docker_container:
+        name: jellyfin
+        image: lscr.io/linuxserver/jellyfin:latest
+        pull: true
+        restart_policy: unless-stopped
+        volumes:
+          - jellyfin_config:/config
+          - jellyfin_media:/data
+        ports:
+          - "80:{{ http_port }}"
+          - "443:{{ https_port }}"
+          - "{{ service_discovery_port }}:{{ service_discovery_port }}/udp"
+          - "{{ auto_discovery_port }}:{{ auto_discovery_port }}/udp"
+        env:
+          TZ: Asia/Bangkok
+          PUID: "{{ jellyfin_uid }}"
+          PGID: "{{ jellyfin_gid }}"
+          JELLYFIN_PublishedServerUrl: "{{ inventory_hostname }}"
+
+    - name: Allow HTTP
+      community.general.ufw:
+        rule: allow
+        proto: tcp
+        port: http
+      notify: reload ufw
+
+    - name: Allow HTTPS
+      community.general.ufw:
+        rule: allow
+        proto: tcp
+        port: https
+      notify: reload ufw
+
+    - name: Allow service auto-discovery
+      community.general.ufw:
+        rule: allow
+        proto: udp
+        port: "{{ service_discovery_port }}"
+      notify: reload ufw
+
+    - name: Allow auto-discovery
+      community.general.ufw:
+        rule: allow
+        proto: udp
+        port: "{{ auto_discovery_port }}"
+      notify: reload ufw
