@@ -4,34 +4,23 @@
   tags: install
   block:
 
-    - name: Create Jellyfin config directory
-      ansible.builtin.file:
-        path: /home/jellyfin/config
-        state: directory
-        mode: 0775
-        owner: jellyfin
-        group: jellyfin
-
-    - name: Create Jellyfin cache directory
-      ansible.builtin.file:
-        path: /home/jellyfin/cache
-        state: directory
-        mode: 0775
-        owner: jellyfin
-        group: jellyfin
+    - name: Create jellyfin_config volume
+      docker_volume:
+        driver: "local"
+        driver_options:
+          type: nfs
+          o: "addr={{ nas }},nolock,soft,rw"
+          device: "{{ jellyfin_config_nfs }}"
+        volume_name: jellyfin_config
 
     - name: Create jellyfin_media volume
       docker_volume:
         driver: "local"
         driver_options:
           type: nfs
-          o: "addr=nas.home,nolock,soft,rw"
-          device: :/volume2/media/data/media
+          o: "addr={{ nas }},nolock,soft,rw"
+          device: "{{ jellyfin_media_nfs }}"
         volume_name: jellyfin_media
-
-    - name: Instantiate passwd database
-      getent:
-        database: passwd
 
     - name: Create Jellyfin container
       community.docker.docker_container:
@@ -40,7 +29,7 @@
         pull: true
         restart_policy: unless-stopped
         volumes:
-          - /home/jellyfin/config:/config
+          - jellyfin_config:/config
           - jellyfin_media:/data
         ports:
           - "80:{{ http_port }}"
@@ -49,6 +38,6 @@
           - "{{ auto_discovery_port }}:{{ auto_discovery_port }}/udp"
         env:
           TZ: Asia/Bangkok
-          PUID: "{{ getent_passwd['jellyfin'].1 }}"
-          PGID: "{{ getent_passwd['jellyfin'].2 }}"
+          PUID: "{{ jellyfin_uid }}"
+          PGID: "{{ jellyfin_gid }}"
           JELLYFIN_PublishedServerUrl: "{{ inventory_hostname }}"
