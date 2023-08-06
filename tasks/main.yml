@@ -31,30 +31,15 @@
         volumes:
           - jellyfin_config:/config
           - jellyfin_media:/data
+        networks:
+          - name: proxy_net
         ports:
-          - "80:{{ http_port }}"
-          - "443:{{ https_port }}"
           - "{{ service_discovery_port }}:{{ service_discovery_port }}/udp"
           - "{{ auto_discovery_port }}:{{ auto_discovery_port }}/udp"
         env:
           TZ: Asia/Bangkok
           PUID: "{{ jellyfin_uid }}"
           PGID: "{{ jellyfin_gid }}"
-          JELLYFIN_PublishedServerUrl: "{{ inventory_hostname }}"
-
-    - name: Allow HTTP
-      community.general.ufw:
-        rule: allow
-        proto: tcp
-        port: http
-      notify: reload ufw
-
-    - name: Allow HTTPS
-      community.general.ufw:
-        rule: allow
-        proto: tcp
-        port: https
-      notify: reload ufw
 
     - name: Allow service auto-discovery
       community.general.ufw:
