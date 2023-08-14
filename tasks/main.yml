@@ -54,3 +54,17 @@
         proto: udp
         port: "{{ auto_discovery_port }}"
       notify: reload ufw
+
+    - name: Setup cron job to stop jellyfin for backup
+      ansible.builtin.cron:
+        name: "Pause jellyfin for backup"
+        hour: "4"
+        minute: "0"
+        job: "sudo docker stop jellyfin"
+
+    - name: Setup cron job to start jellyfin after backup
+      ansible.builtin.cron:
+        name: "Resume jellyfin after backup"
+        hour: "5"
+        minute: "0"
+        job: "sudo docker start jellyfin"
