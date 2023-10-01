@@ -4,23 +4,23 @@
   tags: install
   block:
 
-    - name: Add jellyfin group
+    - name: Add media group
       ansible.builtin.group:
-        name: jellyfin
-        gid: "{{ jellyfin_gid }}"
+        name: media
+        gid: "{{ media_gid }}"
         state: present
 
-    - name: Add Ansible user to jellyfin
+    - name: Add Ansible user to media
       ansible.builtin.user:
         name: "{{ user }}"
-        groups: jellyfin
+        groups: media
         append: true
 
     - name: Add jellyfin user
       ansible.builtin.user:
         name: jellyfin
         uid: "{{ jellyfin_uid }}"
-        group: jellyfin
+        group: media
 
     - name: Create jellyfin config directory
       ansible.builtin.file:
@@ -28,7 +28,7 @@
         state: directory
         mode: "770"
         owner: jellyfin
-        group: jellyfin
+        group: media
 
     - name: Create jellyfin_media volume
       docker_volume:
@@ -56,7 +56,7 @@
         env:
           TZ: Asia/Bangkok
           PUID: "{{ jellyfin_uid }}"
-          PGID: "{{ jellyfin_gid }}"
+          PGID: "{{ media_gid }}"
 
     - name: Allow service auto-discovery
       community.general.ufw:
