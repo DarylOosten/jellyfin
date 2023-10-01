@@ -4,14 +4,31 @@
   tags: install
   block:
 
-    - name: Create jellyfin_config volume
-      docker_volume:
-        driver: "local"
-        driver_options:
-          type: nfs
-          o: "addr={{ nas }},nolock,soft,rw"
-          device: "{{ jellyfin_config_nfs }}"
-        volume_name: jellyfin_config
+    - name: Add jellyfin group
+      ansible.builtin.group:
+        name: jellyfin
+        gid: "{{ jellyfin_gid }}"
+        state: present
+
+    - name: Add Ansible user to jellyfin
+      ansible.builtin.user:
+        name: "{{ user }}"
+        groups: jellyfin
+        append: true
+
+    - name: Add jellyfin user
+      ansible.builtin.user:
+        name: jellyfin
+        uid: "{{ jellyfin_uid }}"
+        group: jellyfin
+
+    - name: Create jellyfin config directory
+      ansible.builtin.file:
+        path: /home/jellyfin/config
+        state: directory
+        mode: "770"
+        owner: jellyfin
+        group: jellyfin
 
     - name: Create jellyfin_media volume
       docker_volume:
@@ -29,7 +46,7 @@
         pull: true
         restart_policy: unless-stopped
         volumes:
-          - jellyfin_config:/config
+          - /home/jellyfin/config:/config
           - jellyfin_media:/data
         networks:
           - name: proxy_net
@@ -54,17 +71,3 @@
         proto: udp
         port: "{{ auto_discovery_port }}"
       notify: reload ufw
-
-    - name: Setup cron job to stop jellyfin for backup
-      ansible.builtin.cron:
-        name: "Pause jellyfin for backup"
-        hour: "4"
-        minute: "0"
-        job: "sudo docker stop jellyfin"
-
-    - name: Setup cron job to start jellyfin after backup
-      ansible.builtin.cron:
-        name: "Resume jellyfin after backup"
-        hour: "5"
-        minute: "0"
-        job: "sudo docker start jellyfin"
