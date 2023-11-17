@@ -3,9 +3,3 @@
   become: true
   community.general.ufw:
     state: reloaded
-
-- name: restart nginx
-  become: true
-  service:
-    state: restarted
-    name: nginx
